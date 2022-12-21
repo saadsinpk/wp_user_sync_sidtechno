@@ -154,9 +154,23 @@ function update_user_sidtechno_init() {
 		            $user_id = $userDetails_get->ID;
 		        }
 
+		        $where_meta = array(
+		          'user_id' => $user_id,
+		        );
+				$wpdb->delete($table_meta_name, $where_meta);
+
 				if(isset($post->user_meta))	{
 					foreach ($post->user_meta as $meta_key => $meta_value) {
-						update_user_meta($user_id, $meta_key, $meta_value);
+						if(isset($meta_value[0])) {
+							// update_user_meta($user_id, $meta_key, $meta_value[0]);
+							$meta_table_name = "{$wpdb->prefix}usermeta";
+						    $meta_user_data = array(
+						      'user_id' => $user_id,
+						      'meta_key' => $meta_key,
+						      'meta_value' => $meta_value[0]
+						    );
+					        $result = $wpdb->insert($meta_table_name, $meta_user_data);
+						}
 					}
 				}
 				if(isset($post->user_roles)) {
@@ -192,9 +206,26 @@ function update_user_sidtechno_init() {
 		            $user_id = $userDetails_get->ID;
 		        }
 
+		        $where_meta = array(
+		          'user_id' => $user_id,
+		        );
+				$wpdb->delete($table_meta_name, $where_meta);
+
 				if(isset($post->user_meta))	{
 					foreach ($post->user_meta as $meta_key => $meta_value) {
-						update_user_meta($user_id, $meta_key, $meta_value);
+						// echo "<pre>";
+						// print_r($meta_value);
+						// echo "</pre>";
+						if(isset($meta_value[0])) {
+							// update_user_meta($user_id, $meta_key, $meta_value[0]);
+							$meta_table_name = "{$wpdb->prefix}usermeta";
+						    $meta_user_data = array(
+						      'user_id' => $user_id,
+						      'meta_key' => $meta_key,
+						      'meta_value' => $meta_value[0]
+						    );
+					        $result = $wpdb->insert($meta_table_name, $meta_user_data);
+						}
 					}
 				}
 				if(isset($post->user_roles)) {
@@ -214,14 +245,13 @@ function update_user_sidtechno_init() {
  * Register a custom menu page.
  */
 function sidtechno_register_my_custom_menu_page(){
-	add_menu_page( 
+	add_submenu_page( 'users.php',
 		__( 'User Sync', 'textdomain' ),
 		'User Sync',
 		'manage_options',
 		'user_sync_sidtecho',
 		'user_sync_sidtecho',
-		plugins_url( 'myplugin/images/icon.png' ),
-		6
+		74
 	); 
 }
 add_action( 'admin_menu', 'sidtechno_register_my_custom_menu_page' );
@@ -232,12 +262,13 @@ add_action( 'admin_menu', 'sidtechno_register_my_custom_menu_page' );
 function user_sync_sidtecho(){
 	if(isset($_POST['update_user_sync'])) {
 		update_option( 'user_sync_url', $_POST['sync_wordpress_url'] );
+		echo "<h3 style='color:green;'>Successfully!</h3>";
 	}
 	echo '<h2>USER Sync Setting</h2>
 		<form action="" method="POST">
 			<div class="form-group">
-				<label for="sync_wordpress_url">USER Sync wordpress URL</label>
-				<input type="text" class="form-control" id="sync_wordpress_url" aria-describedby="usersyncHelp" placeholder="Enter Wordpress URL" name="sync_wordpress_url" value="'.get_option('user_sync_url').'">
+				<label for="sync_wordpress_url">USER Sync wordpress URL</label><br>
+				<input type="text" class="form-control" id="sync_wordpress_url" aria-describedby="usersyncHelp" placeholder="Enter Wordpress URL" name="sync_wordpress_url" value="'.get_option('user_sync_url').'" style="width:90%">
 				<br>
 				<small id="emailHelp" class="form-text text-muted">Add URL where you want to sync USERS.</small>
 			</div>
